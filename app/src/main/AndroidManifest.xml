@@ -30,5 +30,5 @@
     <!-- Devices >= 3 have version of Android Market that supports licensing. -->
     <uses-sdk android:minSdkVersion="3" />
     <!-- Required permission to check licensing. -->
-    <uses-permission android:name="com.android.vending.CHECK_LICENSE" />
+    <uses-permission android:name="ir.mservices.market.CHECK_LICENSE" />
 </manifest>
