@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
@@ -146,11 +147,16 @@ public class LicenseChecker implements ServiceConnection {
             if (mService == null) {
                 Log.i(TAG, "Binding to licensing service.");
                 try {
+                    Intent intent =
+                            new Intent(
+                                    new String(
+                                            Base64.decode("aXIubXNlcnZpY2VzLm1hcmtldC5JTGljZW5zaW5nU2VydmljZQ==")));
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.DONUT) {
+                        intent.setPackage("ir.mservices.market");
+                    }
                     boolean bindResult = mContext
                             .bindService(
-                                    new Intent(
-                                            new String(
-                                                    Base64.decode("aXIubXNlcnZpY2VzLm1hcmtldC5JTGljZW5zaW5nU2VydmljZQ=="))),
+                                    intent,
                                     this, // ServiceConnection.
                                     Context.BIND_AUTO_CREATE);
 
