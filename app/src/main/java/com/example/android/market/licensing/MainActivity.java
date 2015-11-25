@@ -101,28 +101,61 @@ public class MainActivity extends Activity {
         doCheck();
     }
 
-    protected Dialog onCreateDialog(int id) {
-        final boolean bRetry = id == 1;
-        return new AlertDialog.Builder(this)
-            .setTitle(R.string.unlicensed_dialog_title)
-            .setMessage(bRetry ? R.string.unlicensed_dialog_retry_body : R.string.unlicensed_dialog_body)
-            .setPositiveButton(bRetry ? R.string.retry_button : R.string.buy_button, new DialogInterface.OnClickListener() {
-                boolean mRetry = bRetry;
-                public void onClick(DialogInterface dialog, int which) {
-                    if ( mRetry ) {
-                        doCheck();
-                    } else {
-                        Intent marketIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(
-                                "http://market.android.com/details?id=" + getPackageName()));
-                            startActivity(marketIntent);                        
+    private void showMyDialog(final int reason) {
+        String dialogBody, buttonMsg;
+        switch (reason) {
+            case Policy.RETRY:
+                dialogBody = getResources().getString(R.string.unlicensed_dialog_retry_body);
+                buttonMsg = getResources().getString(R.string.retry_button);
+                break;
+            case LicenseCheckerCallback.ERROR_MYKET_NOT_INSTALLED:
+                dialogBody = getResources().getString(R.string.unlicensed_dialog_download_myket_body);
+                buttonMsg = getResources().getString(R.string.download_myket_button);
+                break;
+            case LicenseCheckerCallback.ERROR_MYKET_NOT_SUPPORTED:
+                dialogBody = getResources().getString(R.string.unlicensed_dialog_update_myket_body);
+                buttonMsg = getResources().getString(R.string.update_myket_button);
+                break;
+            default:
+                dialogBody = getResources().getString(R.string.unlicensed_dialog_body);
+                buttonMsg = getResources().getString(R.string.buy_button);
+                break;
+        }
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.unlicensed_dialog_title)
+                .setMessage(dialogBody)
+                .setPositiveButton(buttonMsg, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent;
+                        switch (reason) {
+                            case Policy.RETRY:
+                                doCheck();
+                                break;
+                            case LicenseCheckerCallback.ERROR_MYKET_NOT_INSTALLED:
+                                intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://myket.ir"));
+                                startActivity(intent);
+                                break;
+                            case LicenseCheckerCallback.ERROR_MYKET_NOT_SUPPORTED:
+                                intent = new Intent(Intent.ACTION_VIEW, Uri.parse(
+                                        "myket://application/#Intent;scheme=myket;package="
+                                                + LicenseChecker.MYKET_PACKAGE_NAME + ";end"));
+                                startActivity(intent);
+                                break;
+                            default:
+                                intent = new Intent(Intent.ACTION_VIEW, Uri.parse(
+                                        "myket://application/#Intent;scheme=myket;package="
+                                                + getPackageName() + ";end"));
+                                startActivity(intent);
+                                break;
+                        }
                     }
-                }
-            })
-            .setNegativeButton(R.string.quit_button, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    finish();
-                }
-            }).create();
+                })
+                .setNegativeButton(R.string.quit_button, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                    }
+                }).create();
+        builder.show();
     }
 
     private void doCheck() {
@@ -141,16 +174,16 @@ public class MainActivity extends Activity {
             }
         });
     }
-    
-    private void displayDialog(final boolean showRetry) {
+
+    private void displayDialog(final int reason) {
         mHandler.post(new Runnable() {
             public void run() {
                 setProgressBarIndeterminateVisibility(false);
-                showDialog(showRetry ? 1 : 0);
+                showMyDialog(reason);
                 mCheckLicenseButton.setEnabled(true);
             }
         });
-    }    
+    }
 
     private class MyLicenseCheckerCallback implements LicenseCheckerCallback {
         public void allow(int policyReason) {
@@ -177,7 +210,7 @@ public class MainActivity extends Activity {
             // If the reason for the lack of license is that the service is
             // unavailable or there is another problem, we display a
             // retry button on the dialog and a different message.
-            displayDialog(policyReason == Policy.RETRY);
+            displayDialog(policyReason);
         }
 
         public void applicationError(int errorCode) {

@@ -23,6 +23,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
 import android.os.Handler;
@@ -57,6 +58,7 @@ import java.util.Set;
  */
 public class LicenseChecker implements ServiceConnection {
     private static final String TAG = "LicenseChecker";
+    public static final String MYKET_PACKAGE_NAME = "ir.mservices.market";
 
     private static final String KEY_FACTORY_ALGORITHM = "RSA";
 
@@ -135,6 +137,21 @@ public class LicenseChecker implements ServiceConnection {
      * @param callback
      */
     public synchronized void checkAccess(LicenseCheckerCallback callback) {
+        PackageInfo myketPackageInfo = getMyketPackageInfo();
+
+        // Is myket installed?
+        if (myketPackageInfo == null) {
+            callback.dontAllow(LicenseCheckerCallback.ERROR_MYKET_NOT_INSTALLED);
+            return;
+        }
+
+        // Check myket version
+        int myketVersionCode = myketPackageInfo.versionCode;
+        if (myketVersionCode < 510) {
+            callback.dontAllow(LicenseCheckerCallback.ERROR_MYKET_NOT_SUPPORTED);
+            return;
+        }
+
         // If we have a valid recent LICENSED response, we can skip asking
         // Market.
         if (mPolicy.allowAccess()) {
@@ -352,6 +369,14 @@ public class LicenseChecker implements ServiceConnection {
         } catch (NameNotFoundException e) {
             Log.e(TAG, "Package not found. could not get version code.");
             return "";
+        }
+    }
+
+    private PackageInfo getMyketPackageInfo() {
+        try {
+            return mContext.getPackageManager().getPackageInfo(MYKET_PACKAGE_NAME, 0);
+        } catch (NameNotFoundException e) {
+            return null;
         }
     }
 }
