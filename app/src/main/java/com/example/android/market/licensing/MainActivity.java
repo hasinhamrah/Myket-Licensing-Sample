@@ -56,7 +56,7 @@ import android.widget.TextView;
  * licensing documentation.</a>
  */
 public class MainActivity extends Activity {
-    private static final String BASE64_PUBLIC_KEY = "REPLACE THIS WITH YOUR PUBLIC KEY";
+    private static final String BASE64_PUBLIC_KEY = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCmQ7Akv2d49KQXaXwMkuQFoIyQyKT4FXL3OUe+CxYlfQZRJr9+oHeBtmvqIojj0U/UGuVtghsHX8vBgqW4t4UeiKaQDzm+GNgfDSGktjoFZBQLT4MLp5vJzOK2Xuh0GRcUFW6aXhsZY5EJK4UFzYwbRu4aNHdurfCCycke8o/SywIDAQAB";
 
     // Generate your own 20 random bytes, and put them here.
     private static final byte[] SALT = new byte[] {
