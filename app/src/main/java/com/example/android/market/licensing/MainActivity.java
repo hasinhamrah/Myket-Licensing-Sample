@@ -16,15 +16,8 @@
 
 package com.example.android.market.licensing;
 
-import com.google.android.vending.licensing.AESObfuscator;
-import com.google.android.vending.licensing.LicenseChecker;
-import com.google.android.vending.licensing.LicenseCheckerCallback;
-import com.google.android.vending.licensing.Policy;
-import com.google.android.vending.licensing.ServerManagedPolicy;
-
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -36,21 +29,27 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.android.vending.licensing.AESObfuscator;
+import com.google.android.vending.licensing.LicenseChecker;
+import com.google.android.vending.licensing.LicenseCheckerCallback;
+import com.google.android.vending.licensing.MyketServerManagedPolicy;
+import com.google.android.vending.licensing.Policy;
+
 /**
  * Welcome to the world of Android Market licensing. We're so glad to have you
  * onboard!
- * <p>
+ * <p/>
  * The first thing you need to do is get your hands on your public key.
  * Update the BASE64_PUBLIC_KEY constant below with your encoded public key,
  * which you can find on the
  * <a href="http://market.android.com/publish/editProfile">Edit Profile</a>
  * page of the Market publisher site.
- * <p>
+ * <p/>
  * Log in with the same account on your Cupcake (1.5) or higher phone or
  * your FroYo (2.2) emulator with the Google add-ons installed. Change the
  * test response on the Edit Profile page, press Save, and see how this
  * application responds when you check your license.
- * <p>
+ * <p/>
  * After you get this sample running, peruse the
  * <a href="http://developer.android.com/guide/publishing/licensing.html">
  * licensing documentation.</a>
@@ -59,9 +58,9 @@ public class MainActivity extends Activity {
     private static final String BASE64_PUBLIC_KEY = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCmQ7Akv2d49KQXaXwMkuQFoIyQyKT4FXL3OUe+CxYlfQZRJr9+oHeBtmvqIojj0U/UGuVtghsHX8vBgqW4t4UeiKaQDzm+GNgfDSGktjoFZBQLT4MLp5vJzOK2Xuh0GRcUFW6aXhsZY5EJK4UFzYwbRu4aNHdurfCCycke8o/SywIDAQAB";
 
     // Generate your own 20 random bytes, and put them here.
-    private static final byte[] SALT = new byte[] {
-        -46, 65, 30, -128, -103, -57, 74, -64, 51, 88, -95, -45, 77, -117, -36, -113, -11, 32, -64,
-        89
+    private static final byte[] SALT = new byte[]{
+            -46, 65, 30, -128, -103, -57, 74, -64, 51, 88, -95, -45, 77, -117, -36, -113, -11, 32, -64,
+            89
     };
 
     private TextView mStatusText;
@@ -95,9 +94,9 @@ public class MainActivity extends Activity {
         mLicenseCheckerCallback = new MyLicenseCheckerCallback();
         // Construct the LicenseChecker with a policy.
         mChecker = new LicenseChecker(
-            this, new ServerManagedPolicy(this,
+                this, new MyketServerManagedPolicy(this,
                 new AESObfuscator(SALT, getPackageName(), deviceId)),
-            BASE64_PUBLIC_KEY);
+                BASE64_PUBLIC_KEY);
         doCheck();
     }
 

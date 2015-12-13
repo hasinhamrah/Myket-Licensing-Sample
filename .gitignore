@@ -31,6 +31,7 @@ build/
 # Intellij IDEA
 *.iml
 .idea/*
+!.idea/codeStyleSettings.xml
 
 # Intellij/Android Studio, older project format:
 /*/out
