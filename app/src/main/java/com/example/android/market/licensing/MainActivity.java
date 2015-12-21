@@ -102,59 +102,64 @@ public class MainActivity extends Activity {
 
     private void showMyDialog(final int reason) {
         String dialogBody, buttonMsg;
+        DialogInterface.OnClickListener listener;
         switch (reason) {
             case Policy.RETRY:
                 dialogBody = getResources().getString(R.string.unlicensed_dialog_retry_body);
                 buttonMsg = getResources().getString(R.string.retry_button);
+                listener = new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        doCheck();
+                    }
+                };
                 break;
-            case LicenseCheckerCallback.ERROR_MYKET_NOT_INSTALLED:
+            case Policy.MYKET_NOT_INSTALLED:
                 dialogBody = getResources().getString(R.string.unlicensed_dialog_download_myket_body);
                 buttonMsg = getResources().getString(R.string.download_myket_button);
+                listener = new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://myket.ir")));
+                    }
+                };
                 break;
-            case LicenseCheckerCallback.ERROR_MYKET_NOT_SUPPORTED:
+            case Policy.MYKET_NOT_SUPPORTED:
                 dialogBody = getResources().getString(R.string.unlicensed_dialog_update_myket_body);
                 buttonMsg = getResources().getString(R.string.update_myket_button);
+                listener = new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(
+                                "myket://application/#Intent;scheme=myket;package="
+                                        + LicenseChecker.MYKET_PACKAGE_NAME + ";end"));
+                        startActivity(intent);
+                    }
+                };
                 break;
             default:
                 dialogBody = getResources().getString(R.string.unlicensed_dialog_body);
                 buttonMsg = getResources().getString(R.string.buy_button);
+                listener = new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(
+                                "myket://application/#Intent;scheme=myket;package="
+                                        + getPackageName() + ";end"));
+                        startActivity(intent);
+                    }
+                };
                 break;
         }
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(R.string.unlicensed_dialog_title)
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.unlicensed_dialog_title)
                 .setMessage(dialogBody)
-                .setPositiveButton(buttonMsg, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        Intent intent;
-                        switch (reason) {
-                            case Policy.RETRY:
-                                doCheck();
-                                break;
-                            case LicenseCheckerCallback.ERROR_MYKET_NOT_INSTALLED:
-                                intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://myket.ir"));
-                                startActivity(intent);
-                                break;
-                            case LicenseCheckerCallback.ERROR_MYKET_NOT_SUPPORTED:
-                                intent = new Intent(Intent.ACTION_VIEW, Uri.parse(
-                                        "myket://application/#Intent;scheme=myket;package="
-                                                + LicenseChecker.MYKET_PACKAGE_NAME + ";end"));
-                                startActivity(intent);
-                                break;
-                            default:
-                                intent = new Intent(Intent.ACTION_VIEW, Uri.parse(
-                                        "myket://application/#Intent;scheme=myket;package="
-                                                + getPackageName() + ";end"));
-                                startActivity(intent);
-                                break;
-                        }
-                    }
-                })
+                .setPositiveButton(buttonMsg, listener)
                 .setNegativeButton(R.string.quit_button, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         finish();
                     }
-                }).create();
-        builder.show();
+                }).create().show();
     }
 
     private void doCheck() {

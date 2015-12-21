@@ -141,14 +141,14 @@ public class LicenseChecker implements ServiceConnection {
 
         // Is myket installed?
         if (myketPackageInfo == null) {
-            callback.dontAllow(LicenseCheckerCallback.ERROR_MYKET_NOT_INSTALLED);
+            callback.dontAllow(Policy.MYKET_NOT_INSTALLED);
             return;
         }
 
         // Check myket version
         int myketVersionCode = myketPackageInfo.versionCode;
         if (myketVersionCode < 510) {
-            callback.dontAllow(LicenseCheckerCallback.ERROR_MYKET_NOT_SUPPORTED);
+            callback.dontAllow(Policy.MYKET_NOT_SUPPORTED);
             return;
         }
 

@@ -41,6 +41,14 @@ public interface Policy {
      * perhaps as a result of faulty networking
      */
     public static final int RETRY = 0x0123;
+    /**
+     * MYKET_NOT_INSTALLED means Myket is not installed
+     */
+    public static final int MYKET_NOT_INSTALLED = 0x0300;
+    /**
+     * MYKET_NOT_SUPPORTED means that Myket version not support
+     */
+    public static final int MYKET_NOT_SUPPORTED = 0x0301;
 
     /**
      * Provide results from contact with the license server. Retry counts are
