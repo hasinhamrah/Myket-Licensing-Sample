@@ -110,7 +110,6 @@ public class MyketServerManagedPolicy implements Policy {
      * @param rawData  the raw server response data
      */
     public void processServerResponse(int response, ResponseData rawData) {
-
         // Update retry counter
         if (response != Policy.RETRY) {
             setRetryCount(0);
@@ -124,6 +123,7 @@ public class MyketServerManagedPolicy implements Policy {
             setValidityTimestamp(extras.get("VT"));
             setRetryUntil(extras.get("GT"));
             setMaxRetries(extras.get("GR"));
+            response = validateTimeOrigin(response, rawData.timestamp);
         } else if (response == Policy.NOT_LICENSED) {
             // Clear out stale policy data
             setValidityTimestamp(DEFAULT_VALIDITY_TIMESTAMP);
@@ -131,7 +131,7 @@ public class MyketServerManagedPolicy implements Policy {
             setMaxRetries(DEFAULT_MAX_RETRIES);
         }
 
-        setLastResponse(validateTimeOrigin(response, rawData.timestamp));
+        setLastResponse(response);
         mPreferences.commit();
     }
 
