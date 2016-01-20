@@ -141,7 +141,7 @@ public class MyketServerManagedPolicy implements Policy {
      * @return current time in milliseconds
      */
     private long currentBootTime() {
-        return System.nanoTime() / 1000;
+        return System.nanoTime() / 1000000;
     }
 
     /**
